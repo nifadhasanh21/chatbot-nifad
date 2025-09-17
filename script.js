@@ -1,6 +1,7 @@
 const btn = document.querySelector('.talk');
 const content = document.querySelector('.content');
 
+// ----------- SPEAK FUNCTION -----------
 function speak(text) {
     const text_speak = new SpeechSynthesisUtterance(text);
 
@@ -11,6 +12,7 @@ function speak(text) {
     window.speechSynthesis.speak(text_speak);
 }
 
+// ----------- GREETING -----------
 function wishMe() {
     var day = new Date();
     var hour = day.getHours();
@@ -29,10 +31,14 @@ window.addEventListener('load', () => {
     wishMe();
 });
 
+// ----------- SPEECH RECOGNITION SETUP -----------
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
+if (!SpeechRecognition) {
+    content.textContent = "Speech Recognition not supported in this browser!";
+    speak("Sorry, your browser does not support speech recognition.");
+}
 
-// ✅ Fix: make it more reliable
+const recognition = new SpeechRecognition();
 recognition.continuous = true;
 recognition.interimResults = false;
 recognition.lang = "en-US";
@@ -40,6 +46,7 @@ recognition.lang = "en-US";
 recognition.onresult = (event) => {
     const currentIndex = event.resultIndex;
     const transcript = event.results[currentIndex][0].transcript;
+    console.log("You said:", transcript);
     content.textContent = transcript;
     takeCommand(transcript.toLowerCase());
 };
@@ -50,15 +57,18 @@ recognition.onerror = (event) => {
     speak("I couldn't hear you, please allow microphone access.");
 };
 
+// ----------- BUTTON CLICK -----------
 btn.addEventListener('click', () => {
     try {
         content.textContent = "Listening...";
         recognition.start();
+        console.log("Recognition started");
     } catch (error) {
-        console.error("Recognition already started");
+        console.warn("Recognition already started");
     }
 });
 
+// ----------- COMMANDS -----------
 function takeCommand(message) {
     if (message.includes('hey') || message.includes('hello')) {
         speak("Hello Sir, How May I Help You?");
@@ -72,7 +82,7 @@ function takeCommand(message) {
         window.open("https://facebook.com", "_blank");
         speak("Opening Facebook...");
     } else if (message.includes('what is') || message.includes('who is') || message.includes('what are')) {
-        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
+        window.open(`https://www.google.com/search?q=${message.replace(/ /g, "+")}`, "_blank");
         const finalText = "This is what I found on the internet regarding " + message;
         speak(finalText);
     } else if (message.includes('wikipedia')) {
@@ -89,10 +99,9 @@ function takeCommand(message) {
         speak(finalText);
     } else if (message.includes('calculator')) {
         speak("Opening Calculator");
-        // Note: This won't work on browsers, only native apps can trigger calculator
         window.open("https://www.google.com/search?q=calculator", "_blank");
     } else {
-        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
+        window.open(`https://www.google.com/search?q=${message.replace(/ /g, "+")}`, "_blank");
         const finalText = "I found some information for " + message + " on Google";
         speak(finalText);
     }
