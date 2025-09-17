@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap");
+
 * {
     margin: 0;
     padding: 0;
@@ -41,7 +42,7 @@
 }
 
 .main .image-container p {
-    color: #324042;
+    color: #9ba9ac;
     text-align: center;
     margin-bottom: 40px;
 }
@@ -53,7 +54,7 @@
     width: 40vw;
     height: 50px;
     border-radius: 20px;
-    background: rgb(202 253 255 / 50%);
+    background: rgba(202, 253, 255, 0.5);
 }
 
 .main .input .talk {
