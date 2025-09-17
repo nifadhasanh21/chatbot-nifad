@@ -1,8 +1,11 @@
 const btn = document.querySelector('.talk');
 const content = document.querySelector('.content');
 
+let lastSpokenText = ""; // store last spoken text
+
 // ----------- SPEAK FUNCTION -----------
 function speak(text) {
+    lastSpokenText = text.toLowerCase(); // remember what JARVIS said
     const text_speak = new SpeechSynthesisUtterance(text);
 
     text_speak.rate = 1;
@@ -39,22 +42,28 @@ if (!SpeechRecognition) {
 }
 
 const recognition = new SpeechRecognition();
-recognition.continuous = true;
+recognition.continuous = false; // ✅ only listens once per click
 recognition.interimResults = false;
 recognition.lang = "en-US";
 
 recognition.onresult = (event) => {
-    const currentIndex = event.resultIndex;
-    const transcript = event.results[currentIndex][0].transcript;
+    const transcript = event.results[0][0].transcript.toLowerCase();
     console.log("You said:", transcript);
     content.textContent = transcript;
-    takeCommand(transcript.toLowerCase());
+
+    // ✅ ignore if JARVIS is hearing himself
+    if (transcript.includes(lastSpokenText)) {
+        console.log("Ignored self-voice:", transcript);
+        return;
+    }
+
+    takeCommand(transcript);
 };
 
 recognition.onerror = (event) => {
     console.error("Speech Recognition Error:", event.error);
-    content.textContent = "Microphone not working. Please allow mic access!";
-    speak("I couldn't hear you, please allow microphone access.");
+    content.textContent = "Microphone error!";
+    speak("I couldn't hear you, please check microphone permissions.");
 };
 
 // ----------- BUTTON CLICK -----------
@@ -83,26 +92,21 @@ function takeCommand(message) {
         speak("Opening Facebook...");
     } else if (message.includes('what is') || message.includes('who is') || message.includes('what are')) {
         window.open(`https://www.google.com/search?q=${message.replace(/ /g, "+")}`, "_blank");
-        const finalText = "This is what I found on the internet regarding " + message;
-        speak(finalText);
+        speak("This is what I found on the internet regarding " + message);
     } else if (message.includes('wikipedia')) {
         window.open(`https://en.wikipedia.org/wiki/${message.replace("wikipedia", "").trim()}`, "_blank");
-        const finalText = "This is what I found on Wikipedia regarding " + message;
-        speak(finalText);
+        speak("This is what I found on Wikipedia regarding " + message);
     } else if (message.includes('time')) {
         const time = new Date().toLocaleString(undefined, { hour: "numeric", minute: "numeric" });
-        const finalText = "The current time is " + time;
-        speak(finalText);
+        speak("The current time is " + time);
     } else if (message.includes('date')) {
         const date = new Date().toLocaleString(undefined, { month: "short", day: "numeric" });
-        const finalText = "Today's date is " + date;
-        speak(finalText);
+        speak("Today's date is " + date);
     } else if (message.includes('calculator')) {
         speak("Opening Calculator");
         window.open("https://www.google.com/search?q=calculator", "_blank");
     } else {
         window.open(`https://www.google.com/search?q=${message.replace(/ /g, "+")}`, "_blank");
-        const finalText = "I found some information for " + message + " on Google";
-        speak(finalText);
+        speak("I found some information for " + message + " on Google");
     }
 }
