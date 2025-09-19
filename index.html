@@ -5,26 +5,215 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARVIS - Virtual Assistant</title>
-    <link rel="shortcut icon" href="avatar.png" type="image/x-icon">
+    <title>NIFAD - Advanced Virtual Assistant</title>
+    <link rel="shortcut icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZmZmZiI+PHBhdGggZD0iTTEyLDJBMTAuMzMsMTAuMzMsMCwxLDAsMjIuMzMsMTIuMzMsMTAuMzMsMTAuMzMsMCwwLDAsMTIsMlptMCwxOWE4LjY3LDguNjcsMCwxLDEsOC42Ny04LjY3QTguNjcsOC42NywwLDAsMSwxMiwyMVptNC41LTguMTdhMS41LDEuNSwwLDAsMS0xLjUsMS41SDl2LTNoNmExLjUsMS41LDAsMCwxLDEuNSwxLjVaIi8+PC9zdmc+" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 
 <body>
-    <section class="main">
-        <div class="image-container">
-            <div class="image">
-                <img src="giphy.gif" alt="image">
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>N.I.F.A.D.</h1>
+                    <span>JUST A RATHER VERY INTELLIGENT SYSTEM</span>
+                </div>
             </div>
-            <h1>J A R V I S</h1>
-            <p>I’m a Virtual Assistant JARVIS, How may I help you?</p>
+            
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>OPERATIONAL</span>
+            </div>
         </div>
-        <div class="input">
-            <button class="talk"><i class="fas fa-microphone-alt"></i></button>
-            <h1 class="content">Click here to speak</h1>
+        
+        <div class="main-content">
+            <div class="panel assistant-panel">
+                <div class="visual-display">
+                    <div class="hud-container">
+                        <div class="hud-element" id="hud-time">
+                            <span class="hud-label">TIME</span>
+                            <span class="hud-value" id="current-time">--:--:--</span>
+                        </div>
+                        <div class="hud-element" id="hud-date">
+                            <span class="hud-label">DATE</span>
+                            <span class="hud-value" id="current-date">-- --- ----</span>
+                        </div>
+                        <div class="hud-element" id="hud-status">
+                            <span class="hud-label">STATUS</span>
+                            <span class="hud-value">ACTIVE</span>
+                        </div>
+                    </div>
+                    
+                    <div class="robot-face">
+                        <div class="helmet">
+                            <div class="faceplate">
+                                <div class="scan-line"></div>
+                                <div class="eyes">
+                                    <div class="eye left">
+                                        <div class="pupil"></div>
+                                    </div>
+                                    <div class="eye right">
+                                        <div class="pupil"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="assistant-status">
+                        <h2>N.I.F.A.D. ONLINE</h2>
+                        <p>At your service, Sir. How may I assist you?</p>
+                    </div>
+                </div>
+                
+                <div class="input-container">
+                    <div class="input-box">
+                        <button class="talk-btn" id="talkBtn">
+                            <i class="fas fa-microphone-alt"></i>
+                        </button>
+                        <input type="text" class="command-input" id="commandInput" placeholder="Click microphone or say 'Hey Nifad'...">
+                    </div>
+                </div>
+                
+                <div class="listening-animation" id="listeningAnimation">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <p>LISTENING...</p>
+                </div>
+            </div>
+            
+            <div class="panel history-panel">
+                <div class="panel-header">
+                    <h2>COMMAND HISTORY</h2>
+                    <button class="clear-btn" id="clearHistoryBtn">CLEAR ALL</button>
+                </div>
+                <ul class="history-list" id="historyList">
+                    <li class="history-item system">
+                        <span class="user-command"><i class="fas fa-server"></i> SYSTEM: N.I.F.A.D. INITIALIZED</span>
+                        <span class="assistant-response">All systems operational. Ready for commands, Sir.</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="panel commands-panel">
+                <div class="panel-header">
+                    <h2>COMMAND DATABASE</h2>
+                </div>
+                <div class="command-categories">
+                    <div class="command-category">
+                        <h3><i class="fas fa-globe"></i> WEB NAVIGATION</h3>
+                        <ul class="command-list">
+                            <li><i class="fas fa-chevron-right"></i> Open Google</li>
+                            <li><i class="fas fa-chevron-right"></i> Open YouTube</li>
+                            <li><i class="fas fa-chevron-right"></i> Open Facebook</li>
+                            <li><i class="fas fa-chevron-right"></i> Open Wikipedia</li>
+                            <li><i class="fas fa-chevron-right"></i> Search for [query]</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="command-category">
+                        <h3><i class="fas fa-desktop"></i> SYSTEM CONTROLS</h3>
+                        <ul class="command-list">
+                            <li><i class="fas fa-chevron-right"></i> What time is it?</li>
+                            <li><i class="fas fa-chevron-right"></i> What's the date?</li>
+                            <li><i class="fas fa-chevron-right"></i> Open calculator</li>
+                            <li><i class="fas fa-chevron-right"></i> Clear history</li>
+                            <li><i class="fas fa-chevron-right"></i> Go to sleep</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="command-category">
+                        <h3><i class="fas fa-gamepad"></i> ENTERTAINMENT</h3>
+                        <ul class="command-list">
+                            <li><i class="fas fa-chevron-right"></i> Play music</li>
+                            <li><i class="fas fa-chevron-right"></i> Tell me a joke</li>
+                            <li><i class="fas fa-chevron-right"></i> Weather forecast</li>
+                            <li><i class="fas fa-chevron-right"></i> News updates</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="command-category">
+                        <h3><i class="fas fa-tasks"></i> PRODUCTIVITY</h3>
+                        <ul class="command-list">
+                            <li><i class="fas fa-chevron-right"></i> Create note</li>
+                            <li><i class="fas fa-chevron-right"></i> Set alarm</li>
+                            <li><i class="fas fa-chevron-right"></i> Set timer</li>
+                            <li><i class="fas fa-chevron-right"></i> Add to calendar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-    </section>
+        
+        <div class="footer">
+            <p>N.I.F.A.D. AI SYSTEM &copy; 2023 | ADVANCED VIRTUAL ASSISTANT TECHNOLOGY</p>
+        </div>
+    </div>
+    
+    <div class="settings-toggle" id="settingsToggle">
+        <i class="fas fa-cog"></i>
+    </div>
+    
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3>SYSTEM SETTINGS</h3>
+            <button class="close-settings" id="closeSettings">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="setting-item">
+            <label for="voiceSelect">VOICE PREFERENCE</label>
+            <select id="voiceSelect">
+                <option value="default">DEFAULT VOICE</option>
+            </select>
+        </div>
+        
+        <div class="setting-item">
+            <label for="speechRate">SPEECH RATE</label>
+            <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1">
+            <div class="range-values">
+                <span>SLOWER</span>
+                <span>FASTER</span>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <label for="speechPitch">SPEECH PITCH</label>
+            <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1">
+            <div class="range-values">
+                <span>LOWER</span>
+                <span>HIGHER</span>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <label for="autoListen" class="checkbox-container">
+                <span>AUTO LISTEN AFTER SPEECH</span>
+                <input type="checkbox" id="autoListen" checked>
+            </label>
+        </div>
+        
+        <div class="setting-item">
+            <label for="saveHistory" class="checkbox-container">
+                <span>SAVE COMMAND HISTORY</span>
+                <input type="checkbox" id="saveHistory" checked>
+            </label>
+        </div>
+        
+        <div class="setting-item">
+            <button id="resetSettings" class="reset-btn">
+                RESET TO DEFAULT SETTINGS
+            </button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
