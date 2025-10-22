@@ -468,4 +468,16 @@ function loadSettings() {
     if (saveHistory) saveHistory.checked = settings.saveHistory !== undefined ? settings.saveHistory : true;
 }
 
-// Save
+// Save settings
+function saveSettings() {
+    const settings = {
+        speechRate: parseFloat(speechRate.value),
+        speechPitch: parseFloat(speechPitch.value),
+        autoListen: autoListen.checked,
+        saveHistory: saveHistory.checked
+    };
+    localStorage.setItem('nifadSettings', JSON.stringify(settings));
+}
+
+// Initialize the app when the DOM is loaded
+document.addEventListener('DOMContentLoaded', init);
