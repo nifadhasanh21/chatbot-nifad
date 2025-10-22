@@ -28,7 +28,7 @@ let activationKeyword = "hey nifad";
 let isAwake = false;
 let isMicrophoneBlocked = false;
 
-// For follow-up voice inputs when user says only "search for" or "set alarm"
+// For follow-up voice inputs
 let pendingCommand = null;
 
 // Initialize the app
@@ -40,8 +40,7 @@ function init() {
     populateVoices();
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
-    // Event listeners for UI elements
+
     talkBtn.addEventListener('click', toggleListening);
     commandInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -49,7 +48,7 @@ function init() {
             commandInput.value = '';
         }
     });
-    
+
     clearHistoryBtn.addEventListener('click', () => {
         historyList.innerHTML = '';
         const systemItem = document.createElement('li');
@@ -58,38 +57,35 @@ function init() {
         historyList.appendChild(systemItem);
         speak("History cleared, Sir.");
     });
-    
+
     settingsToggle.addEventListener('click', () => {
         settingsPanel.classList.add('open');
     });
-    
+
     closeSettings.addEventListener('click', () => {
         settingsPanel.classList.remove('open');
     });
-    
+
     speechRate.addEventListener('input', saveSettings);
     speechPitch.addEventListener('input', saveSettings);
     autoListen.addEventListener('change', saveSettings);
     saveHistory.addEventListener('change', saveSettings);
-    
+
     resetSettings.addEventListener('click', () => {
         localStorage.removeItem('nifadSettings');
         loadSettings();
         speak("Settings restored to default values.");
     });
-    
-    // Populate voices when they are loaded
+
     if (speechSynthesis) {
         speechSynthesis.onvoiceschanged = populateVoices;
     }
-    
-    // Initial greeting
+
     setTimeout(() => {
         addToHistory('SYSTEM', 'N.I.F.A.D. INITIALIZED');
         speak("All systems operational. Ready for your command, Sir.");
     }, 1000);
 }
-
 
 // Update date and time in HUD
 function updateDateTime() {
@@ -100,7 +96,7 @@ function updateDateTime() {
     if (currentDateElement) currentDateElement.textContent = date;
 }
 
-// Show microphone error message
+// Microphone error message
 function showMicrophoneError() {
     addToHistory('SYSTEM', 'Microphone access is blocked. Please allow microphone permissions in your browser settings.');
     speak("Microphone access is blocked. Please allow microphone permissions to use voice commands.");
@@ -110,7 +106,7 @@ function showMicrophoneError() {
     talkBtn.style.opacity = "0.5";
 }
 
-// Set up speech recognition
+// Speech Recognition
 function setupSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -120,27 +116,25 @@ function setupSpeechRecognition() {
         talkBtn.style.opacity = "0.5";
         return null;
     }
-    
+
     recognition = new SpeechRecognition();
-    recognition.continuous = true; // KEEP listening until user stops
+    recognition.continuous = true;
     recognition.interimResults = false;
     recognition.lang = 'en-US';
-    
+
     recognition.onstart = () => {
         isListening = true;
         talkBtn.innerHTML = '<i class="fas fa-microphone"></i>';
         talkBtn.classList.add('listening');
         listeningAnimation.style.display = 'block';
     };
-    
+
     recognition.onresult = (event) => {
-        // pick the latest result (works well with continuous mode)
         const lastIndex = event.results.length - 1;
         const transcriptRaw = event.results[lastIndex][0].transcript.trim();
         const transcript = transcriptRaw.toLowerCase();
         console.log('Heard:', transcript);
-        
-        // If we are waiting for a follow-up, handle it
+
         if (pendingCommand) {
             handleFollowUp(transcriptRaw);
         } else if (transcript.includes(activationKeyword) || isAwake) {
@@ -157,15 +151,14 @@ function setupSpeechRecognition() {
             }
         }
     };
-    
+
     recognition.onend = () => {
         isListening = false;
         talkBtn.innerHTML = '<i class="fas fa-microphone-alt"></i>';
         talkBtn.classList.remove('listening');
         listeningAnimation.style.display = 'none';
-        // don't auto-restart here; speechSynthesis.onend will restart if autoListen is enabled
     };
-    
+
     recognition.onerror = (event) => {
         console.error('Speech recognition error', event.error);
         isListening = false;
@@ -178,14 +171,14 @@ function setupSpeechRecognition() {
     };
 }
 
-// Set up speech synthesis
+// Speech Synthesis
 function setupSpeechSynthesis() {
     if (!speechSynthesis) {
         addToHistory('SYSTEM', 'Speech synthesis is not supported in this browser.');
     }
 }
 
-// Populate voice selection dropdown
+// Populate Voices
 function populateVoices() {
     if (!speechSynthesis) return;
     const voices = speechSynthesis.getVoices();
@@ -203,7 +196,7 @@ function populateVoices() {
     });
 }
 
-// Toggle listening state
+// Toggle Listening
 function toggleListening() {
     if (isMicrophoneBlocked) {
         speak("Please enable microphone permissions in your browser settings to use voice commands.");
@@ -228,50 +221,50 @@ function toggleListening() {
     }
 }
 
-// Handle voice commands
+// Handle Commands
 function handleCommand(command) {
     if (!command) return;
     addToHistory('USER', command);
     const lowerCommand = command.toLowerCase();
-    
+
     if (lowerCommand.includes('time')) {
         const now = new Date();
         const time = now.toLocaleTimeString();
         speak(`The current time is ${time}`);
-        addToHistory('JARVIS', `The current time is ${time}`);
-    } 
+        addToHistory('NIFAD', `The current time is ${time}`);
+    }
     else if (lowerCommand.includes('date')) {
         const now = new Date();
         const date = now.toLocaleDateString();
         speak(`Today's date is ${date}`);
-        addToHistory('JARVIS', `Today's date is ${date}`);
+        addToHistory('NIFAD', `Today's date is ${date}`);
     }
     else if (lowerCommand.includes('open google')) {
         speak("Opening Google");
         window.open('https://www.google.com', '_blank');
-        addToHistory('JARVIS', 'Opening Google');
+        addToHistory('NIFAD', 'Opening Google');
     }
     else if (lowerCommand.includes('open youtube')) {
         speak("Opening YouTube");
         window.open('https://www.youtube.com', '_blank');
-        addToHistory('JARVIS', 'Opening YouTube');
+        addToHistory('NIFAD', 'Opening YouTube');
     }
     else if (lowerCommand.includes('open facebook')) {
         speak("Opening Facebook");
         window.open('https://www.facebook.com', '_blank');
-        addToHistory('JARVIS', 'Opening Facebook');
+        addToHistory('NIFAD', 'Opening Facebook');
     }
     else if (lowerCommand.includes('open wikipedia')) {
         speak("Opening Wikipedia");
         window.open('https://www.wikipedia.org', '_blank');
-        addToHistory('JARVIS', 'Opening Wikipedia');
+        addToHistory('NIFAD', 'Opening Wikipedia');
     }
     else if (lowerCommand.startsWith('search for')) {
         const query = command.replace(/search for/i, '').trim();
         if (query) {
             speak(`Searching for ${query}`);
             window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-            addToHistory('JARVIS', `Searching for ${query}`);
+            addToHistory('NIFAD', `Searching for ${query}`);
         } else {
             speak("What would you like me to search for?");
             pendingCommand = 'search';
@@ -280,7 +273,7 @@ function handleCommand(command) {
     else if (lowerCommand.includes('open calculator')) {
         speak("Opening calculator");
         window.open('https://www.google.com/search?q=calculator', '_blank');
-        addToHistory('JARVIS', 'Opening calculator');
+        addToHistory('NIFAD', 'Opening calculator');
     }
     else if (lowerCommand.includes('clear history')) {
         historyList.innerHTML = '';
@@ -291,14 +284,14 @@ function handleCommand(command) {
         speak("History cleared, Sir.");
     }
     else if (lowerCommand.includes('go to sleep') || lowerCommand === 'sleep') {
-        speak("Going to sleep. Say 'Hey Jarvis' to wake me up.");
+        speak("Going to sleep. Say 'Hey Nifad' to wake me up.");
         isAwake = false;
-        addToHistory('JARVIS', 'Going to sleep');
+        addToHistory('NIFAD', 'Going to sleep');
     }
     else if (lowerCommand.includes('play music')) {
         speak("Playing music");
         window.open('https://www.youtube.com/watch?v=jNQXAC9IVRw', '_blank');
-        addToHistory('JARVIS', 'Playing music');
+        addToHistory('NIFAD', 'Playing music');
     }
     else if (lowerCommand.includes('joke')) {
         const jokes = [
@@ -310,31 +303,31 @@ function handleCommand(command) {
         ];
         const joke = jokes[Math.floor(Math.random() * jokes.length)];
         speak(joke);
-        addToHistory('JARVIS', joke);
+        addToHistory('NIFAD', joke);
     }
     else if (lowerCommand.includes('weather')) {
         speak("Checking weather forecast");
         window.open('https://www.google.com/search?q=weather', '_blank');
-        addToHistory('JARVIS', 'Checking weather forecast');
+        addToHistory('NIFAD', 'Checking weather forecast');
     }
     else if (lowerCommand.includes('news')) {
         speak("Getting news updates");
         window.open('https://news.google.com', '_blank');
-        addToHistory('JARVIS', 'Getting news updates');
+        addToHistory('NIFAD', 'Getting news updates');
     }
     else if (lowerCommand.includes('create note')) {
         speak("Creating a note");
         const note = prompt("What would you like to note down?");
         if (note) {
             speak(`Note created: ${note}`);
-            addToHistory('JARVIS', `Created note: ${note}`);
+            addToHistory('NIFAD', `Created note: ${note}`);
         }
     }
     else if (lowerCommand.startsWith('set alarm')) {
         const time = command.replace(/set alarm/i, '').trim();
         if (time) {
             speak(`Alarm set for ${time}`);
-            addToHistory('JARVIS', `Alarm set for ${time}`);
+            addToHistory('NIFAD', `Alarm set for ${time}`);
         } else {
             speak("Please tell me the time for the alarm.");
             pendingCommand = 'alarm';
@@ -344,7 +337,7 @@ function handleCommand(command) {
         const duration = command.replace(/set timer/i, '').trim();
         if (duration) {
             speak(`Timer set for ${duration}`);
-            addToHistory('JARVIS', `Timer set for ${duration}`);
+            addToHistory('NIFAD', `Timer set for ${duration}`);
         } else {
             speak("Please tell me the duration for the timer.");
             pendingCommand = 'timer';
@@ -354,7 +347,7 @@ function handleCommand(command) {
         const event = command.replace(/(add to calendar|set calendar)/i, '').trim();
         if (event) {
             speak(`Added ${event} to calendar`);
-            addToHistory('JARVIS', `Added ${event} to calendar`);
+            addToHistory('NIFAD', `Added ${event} to calendar`);
         } else {
             speak("Please tell me the event you want to add to the calendar.");
             pendingCommand = 'calendar';
@@ -362,63 +355,62 @@ function handleCommand(command) {
     }
     else if (lowerCommand.includes('hello') || lowerCommand.includes('hi')) {
         speak("Hello Sir. How may I assist you today?");
-        addToHistory('JARVIS', 'Hello Sir. How may I assist you today?');
+        addToHistory('NIFAD', 'Hello Sir. How may I assist you today?');
     }
     else if (lowerCommand.includes('thank')) {
         speak("You're welcome, Sir. Is there anything else I can help with?");
-        addToHistory('JARVIS', "You're welcome, Sir. Is there anything else I can help with?");
+        addToHistory('NIFAD', "You're welcome, Sir. Is there anything else I can help with?");
     }
     else if (lowerCommand.includes('who are you')) {
-        speak("I am JARVIS, Just A Rather Very Intelligent System. Your personal assistant.");
-        addToHistory('JARVIS', "I am JARVIS, Just A Rather Very Intelligent System. Your personal assistant.");
+        speak("I am NIFAD, your personal virtual assistant.");
+        addToHistory('NIFAD', "I am NIFAD, your personal virtual assistant.");
     }
     else {
         speak("I'm sorry, I don't understand that command yet.");
-        addToHistory('JARVIS', "I'm sorry, I don't understand that command yet.");
+        addToHistory('NIFAD', "I'm sorry, I don't understand that command yet.");
     }
 }
 
-// Handle follow-ups (for search, alarm, timer, calendar)
+// Follow-up handler
 function handleFollowUp(responseRaw) {
     const response = responseRaw.trim();
     if (!response) {
         speak("I didn't catch that. Please repeat.");
         return;
     }
-    // Log user follow-up
     addToHistory('USER', response);
-    
+
     if (pendingCommand === 'search') {
         speak(`Searching for ${response}`);
         window.open(`https://www.google.com/search?q=${encodeURIComponent(response)}`, '_blank');
-        addToHistory('JARVIS', `Searching for ${response}`);
+        addToHistory('NIFAD', `Searching for ${response}`);
     } else if (pendingCommand === 'alarm') {
         speak(`Alarm set for ${response}`);
-        addToHistory('JARVIS', `Alarm set for ${response}`);
+        addToHistory('NIFAD', `Alarm set for ${response}`);
     } else if (pendingCommand === 'timer') {
         speak(`Timer set for ${response}`);
-        addToHistory('JARVIS', `Timer set for ${response}`);
+        addToHistory('NIFAD', `Timer set for ${response}`);
     } else if (pendingCommand === 'calendar') {
         speak(`Added ${response} to calendar`);
-        addToHistory('JARVIS', `Added ${response} to calendar`);
+        addToHistory('NIFAD', `Added ${response} to calendar`);
     } else {
         speak("Sorry, I couldn't handle that follow-up.");
     }
-    
+
     pendingCommand = null;
 }
 
-// Add item to command history
+// History
 function addToHistory(type, content) {
     const item = document.createElement('li');
     if (type === 'USER') {
         item.className = 'history-item user';
         item.innerHTML = `<span class="user-command"><i class="fas fa-user"></i> USER: ${content}</span>`;
-    } 
-    else if (type === 'JARVIS') {
+    }
+    else if (type === 'NIFAD') {
         item.className = 'history-item jarvis';
         item.innerHTML = `
-            <span class="user-command"><i class="fas fa-robot"></i> JARVIS:</span>
+            <span class="user-command"><i class="fas fa-robot"></i> NIFAD:</span>
             <span class="assistant-response">${content}</span>
         `;
     }
@@ -430,17 +422,16 @@ function addToHistory(type, content) {
     historyList.scrollTop = historyList.scrollHeight;
 }
 
-// Speak text using speech synthesis
+// Speak
 function speak(text) {
     if (!speechSynthesis) {
         console.log("Speech synthesis not available:", text);
         return;
     }
-    // stop recognition before speaking to avoid capturing JARVIS' own speech
     try {
         if (recognition && isListening) recognition.stop();
     } catch (e) {}
-    
+
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = parseFloat(speechRate.value) || 1;
@@ -450,7 +441,6 @@ function speak(text) {
         utterance.voice = voices.find(voice => voice.name === voiceSelect.value) || voices[0];
     }
     utterance.onend = () => {
-        // After speaking, if autoListen is enabled and assistant is awake, restart recognition automatically
         if (autoListen.checked && isAwake && recognition) {
             setTimeout(() => {
                 try {
@@ -471,40 +461,11 @@ function speak(text) {
 
 // Load settings
 function loadSettings() {
-    const settings = JSON.parse(localStorage.getItem('jarvisSettings')) || {};
+    const settings = JSON.parse(localStorage.getItem('nifadSettings')) || {};
     if (speechRate) speechRate.value = settings.speechRate || 1;
     if (speechPitch) speechPitch.value = settings.speechPitch || 1;
     if (autoListen) autoListen.checked = settings.autoListen !== undefined ? settings.autoListen : true;
     if (saveHistory) saveHistory.checked = settings.saveHistory !== undefined ? settings.saveHistory : true;
 }
 
-// Save settings
-function saveSettings() {
-    const settings = {
-        speechRate: parseFloat(speechRate.value),
-        speechPitch: parseFloat(speechPitch.value),
-        autoListen: autoListen.checked,
-        saveHistory: saveHistory.checked
-    };
-    localStorage.setItem('jarvisSettings', JSON.stringify(settings));
-}
-
-// Initialize the app when the window loads
-window.addEventListener('load', init);
-
-// Fallback for speech recognition errors
-window.addEventListener('click', function() {
-    if (isMicrophoneBlocked) {
-        try {
-            setupSpeechRecognition();
-            isMicrophoneBlocked = false;
-            talkBtn.disabled = false;
-            talkBtn.style.opacity = "1";
-            talkBtn.title = "";
-            addToHistory('SYSTEM', 'Microphone access reinitialized. Please try again.');
-        } catch (error) {
-            console.error('Failed to reinitialize recognition:', error);
-        }
-    }
-});
-
+// Save
